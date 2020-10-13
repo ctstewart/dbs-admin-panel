@@ -75,7 +75,7 @@
 					</v-dialog>
 				</v-toolbar>
 			</template>
-			<template v-slot:item.actions="{ user }">
+			<template v-slot:[`item.actions`]="{ user }">
 				<v-icon dense class="mr-4" @click="editUser(user)">
 					mdi-pencil
 				</v-icon>
@@ -83,7 +83,7 @@
 					mdi-delete
 				</v-icon>
 			</template>
-			<template v-slot:item.hasSeenNewChanges="{ item }">
+			<template v-slot:[`item.hasSeenNewChanges`]="{ item }">
 				<v-simple-checkbox
 					v-model="item.hasSeenNewChanges"
 					disabled
@@ -94,7 +94,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
 	name: 'Home',
@@ -144,56 +144,7 @@ export default {
 					value: 'actions',
 				},
 			],
-			users: [
-				{
-					firstName: 'Christian',
-					lastName: 'Stewart',
-					email: 'cstewart@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-				{
-					firstName: 'Elijah',
-					lastName: 'Chapple',
-					email: 'echapple@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-				{
-					firstName: 'Jennifer',
-					lastName: 'Richter',
-					email: 'jrichter@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-				{
-					firstName: 'Kelsey',
-					lastName: 'Quint',
-					email: 'kquint@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-				{
-					firstName: 'Pete',
-					lastName: 'Jensen',
-					email: 'pjensen@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-				{
-					firstName: 'Jake',
-					lastName: 'Larson',
-					email: 'jlarson@wirelessworld.com',
-					store: 'Owatonna North',
-					district: 'Scot Suess',
-					hasSeenNewChanges: true,
-				},
-			],
+			users: [],
 			stores: [
 				'Admin Staff',
 				'Business Rep',
@@ -258,6 +209,11 @@ export default {
 		}
 	},
 
+	async created() {
+		this.axiosGetUsers()
+		this.loading = false
+	},
+
 	computed: {
 		formTitle() {
 			return this.editedIndex === -1 ? 'New User' : 'Edit User'
@@ -265,6 +221,17 @@ export default {
 	},
 
 	methods: {
+		async axiosGetUsers() {
+			const response = await axios({
+				url: `${process.env.VUE_APP_API_URL}/api/v1/users`,
+				withCredentials: true,
+				params: {
+					limit: 1000
+				}
+			})
+
+			this.users = response.data.data
+		},
 		// editUser(user) {
 		// 	this.dialog = true
 		// },
@@ -278,20 +245,5 @@ export default {
 			this.dialog = false
 		},
 	},
-
-	// async mounted() {
-	// 	const token = localStorage.getItem('token')
-	// 	const response = await axios({
-	// 		method: 'get',
-	// 		// url:
-	// 		// 	'/api/users/adminGetAllUsers' +
-	// 		// 	'?nocache=' +
-	// 		// 	new Date().getTime(), // Safari fix
-	// 		url: '/api/users/adminGetAllUsers',
-	// 		headers: { authorization: `Bearer ${token}` },
-	// 	})
-	// 	this.users = response.data.users
-	// 	this.loading = false
-	// },
 }
 </script>
