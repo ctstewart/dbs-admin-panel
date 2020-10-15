@@ -5,10 +5,6 @@ name: Production Build on Droplet
 
 on: workflow_dispatch
 
-defaults:
-  run:
-    working-directory: /home/dbs/dbs-app/production/dbs-admin-panel/
-
 jobs:
   production-build:
 
@@ -24,6 +20,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: git clone https://github.com/heelercs/dbs-admin-panel.git
+    - run: cd /home/dbs/dbs-app/production/dbs-admin-panel
+    - run: git pull
     - run: npm ci
     - run: npm run build
