@@ -24,8 +24,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: |
-        git pull
-        npm ci
-        npm run build
+    - run: git pull
+    - run: npm ci
+    - run: npm run build
       working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel/
