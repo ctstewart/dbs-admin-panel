@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  staged-build:
 
     runs-on: [self-hosted, linux]
 
@@ -23,5 +23,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npm run build --if-present
-    - run: pm2 reload dbs-admin-panel
+    - run: npm run build
