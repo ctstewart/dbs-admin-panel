@@ -1,105 +1,110 @@
 <template>
-	<v-card>
-		<v-data-table
-			v-if="loading"
-			item-key="name"
-			class="elevation-1"
-			loading
-			loading-text="Loading... Please wait"
-		></v-data-table>
-		<v-data-table
-			v-else
-			:headers="headers"
-			:items="users"
-			:items-per-page="10"
-			class="elevation-1"
-		>
-			<template v-slot:top>
-				<v-toolbar flat>
-					<v-toolbar-title>Users</v-toolbar-title>
-					<v-spacer></v-spacer>
-					<v-dialog v-model="dialog" max-width="500px">
-						<template v-slot:activator="{ on, attrs }">
-							<v-btn
-								color="indigo"
-								dark
-								class="mb-2"
-								v-bind="attrs"
-								v-on="on"
-								>New User</v-btn
-							>
-						</template>
-						<v-card>
-							<v-card-title>
-								<span class="headline">{{ formTitle }}</span>
-							</v-card-title>
-
-							<v-card-text>
-								<v-container>
-									<v-text-field
-										label="First Name"
-										placeholder="John"
-									></v-text-field>
-									<v-text-field
-										label="Last Name"
-										placeholder="Doe"
-									></v-text-field>
-									<v-text-field
-										label="Email"
-										placeholder="jdoe"
-										suffix="@wirelessworld.com"
-									></v-text-field>
-									<v-autocomplete
-										label="Store"
-										placeholder="Owatonna North"
-										:items="stores"
-									></v-autocomplete>
-									<v-autocomplete
-										label="District"
-										placeholder="Scot Suess"
-										:items="districts"
-									></v-autocomplete>
-								</v-container>
-							</v-card-text>
-
-							<v-card-actions>
-								<v-spacer></v-spacer>
-								<v-btn color="indigo" text @click="close"
-									>Cancel</v-btn
+	<div>
+		<app-bar />
+		<v-card>
+			<v-data-table
+				v-if="loading"
+				item-key="name"
+				class="elevation-1"
+				loading
+				loading-text="Loading... Please wait"
+			></v-data-table>
+			<v-data-table
+				v-else
+				:headers="headers"
+				:items="users"
+				:items-per-page="10"
+				class="elevation-1"
+			>
+				<template v-slot:top>
+					<v-toolbar flat>
+						<v-toolbar-title>Users</v-toolbar-title>
+						<v-spacer></v-spacer>
+						<v-dialog v-model="dialog" max-width="500px">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									color="indigo"
+									dark
+									class="mb-2"
+									v-bind="attrs"
+									v-on="on"
+									>New User</v-btn
 								>
-								<v-btn color="indigo" text @click="close"
-									>Save</v-btn
-								>
-							</v-card-actions>
-						</v-card>
-					</v-dialog>
-				</v-toolbar>
-			</template>
-			<template v-slot:[`item.actions`]="{ user }">
-				<v-icon dense class="mr-4" @click="editUser(user)">
-					mdi-pencil
-				</v-icon>
-				<v-icon dense @click="deleteUser(user)">
-					mdi-delete
-				</v-icon>
-			</template>
-			<template v-slot:[`item.hasSeenNewChanges`]="{ item }">
-				<v-simple-checkbox
-					v-model="item.hasSeenNewChanges"
-					disabled
-				></v-simple-checkbox>
-			</template>
-		</v-data-table>
-	</v-card>
+							</template>
+							<v-card>
+								<v-card-title>
+									<span class="headline">{{ formTitle }}</span>
+								</v-card-title>
+
+								<v-card-text>
+									<v-container>
+										<v-text-field
+											label="First Name"
+											placeholder="John"
+										></v-text-field>
+										<v-text-field
+											label="Last Name"
+											placeholder="Doe"
+										></v-text-field>
+										<v-text-field
+											label="Email"
+											placeholder="jdoe"
+											suffix="@wirelessworld.com"
+										></v-text-field>
+										<v-autocomplete
+											label="Store"
+											placeholder="Owatonna North"
+											:items="stores"
+										></v-autocomplete>
+										<v-autocomplete
+											label="District"
+											placeholder="Scot Suess"
+											:items="districts"
+										></v-autocomplete>
+									</v-container>
+								</v-card-text>
+
+								<v-card-actions>
+									<v-spacer></v-spacer>
+									<v-btn color="indigo" text @click="close"
+										>Cancel</v-btn
+									>
+									<v-btn color="indigo" text @click="close"
+										>Save</v-btn
+									>
+								</v-card-actions>
+							</v-card>
+						</v-dialog>
+					</v-toolbar>
+				</template>
+				<template v-slot:[`item.actions`]="{ user }">
+					<v-icon dense class="mr-4" @click="editUser(user)">
+						mdi-pencil
+					</v-icon>
+					<v-icon dense @click="deleteUser(user)">
+						mdi-delete
+					</v-icon>
+				</template>
+				<template v-slot:[`item.hasSeenNewChanges`]="{ item }">
+					<v-simple-checkbox
+						v-model="item.hasSeenNewChanges"
+						disabled
+					></v-simple-checkbox>
+				</template>
+			</v-data-table>
+		</v-card>
+	</div>
 </template>
 
 <script>
 import axios from 'axios'
 
+import AppBar from '../components/AppBar'
+
 export default {
 	name: 'Home',
 
-	components: {},
+	components: { AppBar },
 
 	data() {
 		return {

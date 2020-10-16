@@ -1,110 +1,115 @@
 <template>
-	<v-card>
-		<v-data-table
-			v-if="loading"
-			item-key="name"
-			class="elevation-1"
-			loading
-			loading-text="Loading... Please wait"
-		></v-data-table>
-		<v-data-table
-			v-else
-			:headers="headers"
-			:items="devices"
-			:items-per-page="10"
-			class="elevation-1"
-		>
-			<template v-slot:top>
-				<v-toolbar flat>
-					<v-toolbar-title>Devices</v-toolbar-title>
-					<v-spacer></v-spacer>
-					<v-dialog v-model="dialog" max-width="500px">
-						<template v-slot:activator="{ on, attrs }">
-							<v-btn
-								color="indigo"
-								dark
-								class="mb-2"
-								v-bind="attrs"
-								v-on="on"
-								>New Device</v-btn
-							>
-						</template>
-						<v-card>
-							<v-card-title>
-								<span class="headline">{{ formTitle }}</span>
-							</v-card-title>
+	<div>
+		<app-bar />
+		<v-card>
+			<v-data-table
+				v-if="loading"
+				item-key="name"
+				class="elevation-1"
+				loading
+				loading-text="Loading... Please wait"
+			></v-data-table>
+			<v-data-table
+				v-else
+				:headers="headers"
+				:items="devices"
+				:items-per-page="10"
+				class="elevation-1"
+			>
+				<template v-slot:top>
+					<v-toolbar flat>
+						<v-toolbar-title>Devices</v-toolbar-title>
+						<v-spacer></v-spacer>
+						<v-dialog v-model="dialog" max-width="500px">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									color="indigo"
+									dark
+									class="mb-2"
+									v-bind="attrs"
+									v-on="on"
+									>New Device</v-btn
+								>
+							</template>
+							<v-card>
+								<v-card-title>
+									<span class="headline">{{ formTitle }}</span>
+								</v-card-title>
 
-							<v-card-text>
-								<v-container>
-									<v-text-field
-										label="Name (must be unique)"
-										placeholder="iPhone 11 64GB"
-										v-model="createDevice.name"
-									></v-text-field>
-									<v-text-field
-										label="Full Retail"
-										placeholder="710.00"
-										prefix="$"
-										v-model="createDevice.fullRetail"
-									></v-text-field>
-									<v-autocomplete
-										label="Manufacturer"
-										placeholder="Apple"
-										:items="manufacturers"
-										v-model="createDevice.manufacturer"
-									></v-autocomplete>
-									<v-autocomplete
-										label="Storage Capacity"
-										placeholder="64GB"
-										:items="storageCapacities"
-										v-model="createDevice.storageCapacity"
-									></v-autocomplete>
-								</v-container>
-							</v-card-text>
+								<v-card-text>
+									<v-container>
+										<v-text-field
+											label="Name (must be unique)"
+											placeholder="iPhone 11 64GB"
+											v-model="createDevice.name"
+										></v-text-field>
+										<v-text-field
+											label="Full Retail"
+											placeholder="710.00"
+											prefix="$"
+											v-model="createDevice.fullRetail"
+										></v-text-field>
+										<v-autocomplete
+											label="Manufacturer"
+											placeholder="Apple"
+											:items="manufacturers"
+											v-model="createDevice.manufacturer"
+										></v-autocomplete>
+										<v-autocomplete
+											label="Storage Capacity"
+											placeholder="64GB"
+											:items="storageCapacities"
+											v-model="createDevice.storageCapacity"
+										></v-autocomplete>
+									</v-container>
+								</v-card-text>
 
-							<v-card-actions>
+								<v-card-actions>
+									<v-spacer></v-spacer>
+									<v-btn color="indigo" text @click="close"
+										>Cancel</v-btn
+									>
+									<v-btn color="indigo" text @click="axiosCreateDevice"
+										>Save</v-btn
+									>
+								</v-card-actions>
+							</v-card>
+						</v-dialog>
+						<v-dialog v-model="dialogDelete" max-width="500px">
+							<v-card>
+								<v-card-title class="headline">Are you sure you want to delete this?</v-card-title>
+								<v-card-actions>
 								<v-spacer></v-spacer>
-								<v-btn color="indigo" text @click="close"
-									>Cancel</v-btn
-								>
-								<v-btn color="indigo" text @click="axiosCreateDevice"
-									>Save</v-btn
-								>
-							</v-card-actions>
-						</v-card>
-					</v-dialog>
-					<v-dialog v-model="dialogDelete" max-width="500px">
-						<v-card>
-							<v-card-title class="headline">Are you sure you want to delete this?</v-card-title>
-							<v-card-actions>
-							<v-spacer></v-spacer>
-							<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-							<v-btn color="blue darken-1" text @click="axiosDeleteDevice(editedDevice._id)">OK</v-btn>
-							<v-spacer></v-spacer>
-							</v-card-actions>
-						</v-card>
-					</v-dialog>
-				</v-toolbar>
-			</template>
-			<template v-slot:[`item.actions`]="{ item }">
-				<v-icon dense class="mr-4" @click="editDevice(item)">
-					mdi-pencil
-				</v-icon>
-				<v-icon dense @click="openDeleteDevice(item)">
-					mdi-delete
-				</v-icon>
-			</template>
-		</v-data-table>
-	</v-card>
+								<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+								<v-btn color="blue darken-1" text @click="axiosDeleteDevice(editedDevice._id)">OK</v-btn>
+								<v-spacer></v-spacer>
+								</v-card-actions>
+							</v-card>
+						</v-dialog>
+					</v-toolbar>
+				</template>
+				<template v-slot:[`item.actions`]="{ item }">
+					<v-icon dense class="mr-4" @click="editDevice(item)">
+						mdi-pencil
+					</v-icon>
+					<v-icon dense @click="openDeleteDevice(item)">
+						mdi-delete
+					</v-icon>
+				</template>
+			</v-data-table>
+		</v-card>
+	</div>
 </template>
 
 <script>
 import axios from 'axios'
 
+import AppBar from '../components/AppBar'
+
 export default {
 	name: 'Home',
 
-	components: {},
+	components: { AppBar },
 
 	data() {
 		return {
