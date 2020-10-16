@@ -3,7 +3,7 @@
 		<v-card>
 			<v-card-title color="indigo">Login</v-card-title>
 			<v-card-text>
-				<v-text-field v-model="email" label="Email" suffix="@wirelessworld.com" outlined></v-text-field>
+				<v-text-field v-model="email" label="Email" :suffix="emailSuffix" outlined></v-text-field>
 				<v-text-field v-model="password" label="Password" :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'" :type="showPass ? 'text' : 'password'" @click:append="showPass = !showPass" outlined></v-text-field>
 				<v-btn depressed color="indigo" dark @click="axiosLogin">Login</v-btn>
 			</v-card-text>
@@ -21,7 +21,8 @@ export default {
 	data: () => ({
 		email: '',
 		password: '',
-		showPass: false
+		showPass: false,
+		emailSuffix: process.env.VUE_APP_EMAIL_DOMAIN
 	}),
 
 	methods: {
