@@ -32,7 +32,7 @@ export default {
 					url: `${process.env.VUE_APP_API_URL}/api/v1/auth/login`,
 					withCredentials: true,
 					data: {
-						email: this.email + '@gmail.com',
+						email: this.email + process.env.VUE_APP_EMAIL_DOMAIN,
 						password: this.password
 					}
 				})			
