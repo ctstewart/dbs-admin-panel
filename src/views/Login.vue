@@ -36,7 +36,7 @@ export default {
 						email: this.email + process.env.VUE_APP_EMAIL_DOMAIN,
 						password: this.password
 					}
-				})			
+				})
 
 				if (response.data.success !== true) {
 					console.log(response)
