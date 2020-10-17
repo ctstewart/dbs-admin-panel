@@ -3,9 +3,6 @@
 		<v-app-bar color="indigo" dark elevate-on-scroll>
 			<v-toolbar-title color="white">Admin Bar</v-toolbar-title>
 			<v-spacer></v-spacer>
-			<!-- <v-btn icon>
-				<v-icon>mdi-dots-vertical</v-icon>
-			</v-btn> -->
 
 			<v-menu left bottom>
 				<template v-slot:activator="{ on, attrs }">
@@ -15,8 +12,10 @@
 				</template>
 
 				<v-list>
-					<v-list-item v-for="n in 5" :key="n" @click="() => {}">
-						<v-list-item-title>Option {{ n }}</v-list-item-title>
+					<v-list-item @click="axiosLogout">
+						<v-list-item-title>
+							Logout
+						</v-list-item-title>
 					</v-list-item>
 				</v-list>
 			</v-menu>
@@ -25,7 +24,6 @@
 				<v-tabs align-with-title>
 					<v-tab to="/users">Users</v-tab>
 					<v-tab to="/devices">Devices</v-tab>
-					<!-- <v-tab>Tab 3</v-tab> -->
 				</v-tabs>
 			</template>
 		</v-app-bar>
@@ -33,12 +31,28 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
 	data() {
-		return {
-			items: [{ title: 'test' }],
-		}
+		return {}
 	},
+
+	methods: {
+		async axiosLogout () {
+			try {
+				await axios({
+					method: 'get',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/auth/logout`,
+					withCredentials: true
+				})
+
+				this.$router.push('/login')
+			} catch (err) {
+				console.error(err)
+			}
+		}
+	}
 }
 </script>
 
