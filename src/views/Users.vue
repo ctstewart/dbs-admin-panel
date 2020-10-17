@@ -20,7 +20,7 @@
 					<v-toolbar flat>
 						<v-toolbar-title>Users</v-toolbar-title>
 						<v-spacer></v-spacer>
-						<v-dialog v-model="dialog" max-width="500px">
+						<v-dialog v-model="dialogForm" max-width="500px">
 							<template v-slot:activator="{ on, attrs }">
 								<v-btn
 									color="indigo"
@@ -41,58 +41,89 @@
 										<v-text-field
 											label="First Name"
 											placeholder="John"
+											v-model="user.firstName"
 										></v-text-field>
 										<v-text-field
 											label="Last Name"
 											placeholder="Doe"
+											v-model="user.lastName"
 										></v-text-field>
 										<v-text-field
 											label="Email"
 											placeholder="jdoe"
-											suffix="@wirelessworld.com"
+											:suffix="emailSuffix"
+											v-model="emailSplit"
 										></v-text-field>
 										<v-autocomplete
 											label="Store"
 											placeholder="Owatonna North"
 											:items="stores"
+											v-model="user.store"
 										></v-autocomplete>
 										<v-autocomplete
 											label="District"
 											placeholder="Scot Suess"
 											:items="districts"
+											v-model="user.district"
 										></v-autocomplete>
 									</v-container>
 								</v-card-text>
 
 								<v-card-actions>
 									<v-spacer></v-spacer>
-									<v-btn color="indigo" text @click="close"
+									<v-btn color="indigo" text @click="closeForm"
 										>Cancel</v-btn
 									>
-									<v-btn color="indigo" text @click="close"
+									<v-btn color="indigo" text @click="editedIndex === -1 ? axiosCreateUser() : axiosUpdateUser(user._id)"
 										>Save</v-btn
 									>
 								</v-card-actions>
 							</v-card>
 						</v-dialog>
+						<v-dialog v-model="dialogDelete" max-width="500px">
+							<v-card>
+								<v-card-title class="headline">Are you sure you want to delete this?</v-card-title>
+								<v-card-actions>
+									<v-spacer></v-spacer>
+									<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+									<v-btn color="blue darken-1" text @click="axiosDeleteUser(user._id)">OK</v-btn>
+									<v-spacer></v-spacer>
+								</v-card-actions>
+							</v-card>
+						</v-dialog>
 					</v-toolbar>
 				</template>
-				<template v-slot:[`item.actions`]="{ user }">
-					<v-icon dense class="mr-4" @click="editUser(user)">
+				<template v-slot:[`item.actions`]="{ item }">
+					<v-icon dense class="mr-4" @click="openEditUser(item)">
 						mdi-pencil
 					</v-icon>
-					<v-icon dense @click="deleteUser(user)">
+					<v-icon dense @click="openDeleteUser(item)">
 						mdi-delete
 					</v-icon>
 				</template>
-				<template v-slot:[`item.hasSeenNewChanges`]="{ item }">
+				<!-- <template v-slot:[`item.hasSeenNewChanges`]="{ item }">
 					<v-simple-checkbox
 						v-model="item.hasSeenNewChanges"
 						disabled
 					></v-simple-checkbox>
-				</template>
+				</template> -->
 			</v-data-table>
 		</v-card>
+		<div class="text-center">
+			<v-snackbar	v-model="snackbar.active">
+				{{ snackbar.message }}
+				<template v-slot:action="{ attrs }">
+					<v-btn
+						color="red"
+						text
+						v-bind="attrs"
+						@click="snackbar.active = false"
+					>
+						Close
+					</v-btn>
+				</template>
+			</v-snackbar>
+		</div>
 	</div>
 </template>
 
@@ -102,16 +133,36 @@ import axios from 'axios'
 import AppBar from '../components/AppBar'
 
 export default {
-	name: 'Home',
+	name: 'Users',
 
 	components: { AppBar },
 
 	data() {
 		return {
-			loading: false,
-			dialog: false,
+			dialogForm: false,
 			search: '',
 			editedIndex: -1,
+			loading: true,
+			dialogDelete: false,
+			emailSuffix: process.env.VUE_APP_EMAIL_DOMAIN,
+			snackbar: {
+				active: false,
+				message: null
+			},
+			user: {
+				firstName: null,
+				lastName: null,
+				email: null,
+				store: null,
+				district: null,
+			},
+			defaultUser: {
+				firstName: null,
+				lastName: null,
+				email: null,
+				store: null,
+				district: null,
+			},
 			headers: [
 				{
 					text: 'First Name',
@@ -137,11 +188,6 @@ export default {
 					text: 'District',
 					sortable: true,
 					value: 'district',
-				},
-				{
-					text: 'Has Seen New Changes',
-					sortable: true,
-					value: 'hasSeenNewChanges',
 				},
 				{
 					text: 'Actions',
@@ -215,40 +261,136 @@ export default {
 	},
 
 	async created() {
-		this.axiosGetUsers()
-		this.loading = false
+		try {
+			await this.axiosGetUsers()
+			this.loading = false
+		} catch (err) {
+			console.error(err)
+		}
 	},
 
 	computed: {
 		formTitle() {
 			return this.editedIndex === -1 ? 'New User' : 'Edit User'
 		},
+		emailSplit: {
+			get() {
+				if (this.user.email) {
+					return this.user.email.split('@')[0]
+				} else {
+					return null
+				}
+			},
+			set(newValue) {
+				this.user.email = newValue + process.env.VUE_APP_EMAIL_DOMAIN
+			}
+		}
 	},
 
 	methods: {
-		async axiosGetUsers() {
-			const response = await axios({
-				url: `${process.env.VUE_APP_API_URL}/api/v1/users`,
-				withCredentials: true,
-				params: {
-					limit: 1000
-				}
-			})
+		async axiosGetUsers () {
+			try {
+				const response = await axios({
+					method: 'get',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/users`,
+					withCredentials: true,
+					params: {
+						limit: 1000
+					}
+				})
 
-			this.users = response.data.data
+				this.users = response.data.data
+			} catch (err) {
+				this.openSnackbar(err.response.data.error)
+				console.error(err)
+			}
 		},
-		// editUser(user) {
-		// 	this.dialog = true
-		// },
-		// deleteUser(user) {
-		// 	alert('Are you sure?')
-		// },
-		save() {
-			this.dialog = false
+		async axiosCreateUser () {
+			try {
+				await axios({
+					method: 'post',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/users`,
+					withCredentials: true,
+					data: {
+						firstName: this.user.firstName,
+						lastName: this.user.lastName,
+						email: this.user.email,
+						password: 'WirelessWorldRocks!',
+						store: this.user.store,
+						district: this.user.district
+					}
+				})
+
+				this.axiosGetUsers()
+				this.closeForm()
+			} catch (err) {
+				this.openSnackbar(err.response.data.error)
+				console.error(err)
+			}
 		},
-		close() {
-			this.dialog = false
+		async axiosUpdateUser (userId) {
+			try {
+				await axios({
+					method: 'put',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/users/${userId}`,
+					withCredentials: true,
+					data: this.user
+				})
+
+				this.axiosGetUsers()
+				this.closeForm()
+			} catch (err) {
+				this.openSnackbar(err.response.data.error)
+				console.error(err)
+			}
 		},
+		async axiosDeleteUser (userId) {
+			try {
+				await axios({
+					method: 'delete',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/users/${userId}`,
+					withCredentials: true
+				})
+
+				this.axiosGetUsers()
+				this.closeDelete()
+			} catch (err) {
+				this.openSnackbar(err.response.data.error)
+				console.error(err)			
+			}
+		},
+		openEditUser (user) {
+			this.editedIndex = this.users.indexOf(user)
+			this.user = Object.assign({}, user)
+			this.dialogForm = true
+		},
+		openDeleteUser (user) {
+			this.editedIndex = this.users.indexOf(user)
+			this.user = Object.assign({}, user)
+			this.dialogDelete = true
+		},
+		closeDelete () {
+			this.dialogDelete = false
+			this.$nextTick(() => {
+				this.user = Object.assign({}, this.defaultUser)
+				this.editedIndex = -1
+			})
+		},
+		closeForm () {
+			this.dialogForm = false
+			this.$nextTick(() => {
+				this.user = Object.assign({}, this.defaultUser)
+				this.editedIndex = -1
+			})
+		},
+		openSnackbar (message) {
+			this.snackbar.message = message
+			this.snackbar.active = true
+		},
+		closeSnackbar () {
+			this.snackbar.active = false
+			this.snackbar.message = null
+		}
 	},
 }
 </script>

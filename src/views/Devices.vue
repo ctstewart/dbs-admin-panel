@@ -20,7 +20,7 @@
 					<v-toolbar flat>
 						<v-toolbar-title>Devices</v-toolbar-title>
 						<v-spacer></v-spacer>
-						<v-dialog v-model="dialog" max-width="500px">
+						<v-dialog v-model="dialogForm" max-width="500px">
 							<template v-slot:activator="{ on, attrs }">
 								<v-btn
 									color="indigo"
@@ -41,35 +41,35 @@
 										<v-text-field
 											label="Name (must be unique)"
 											placeholder="iPhone 11 64GB"
-											v-model="createDevice.name"
+											v-model="device.name"
 										></v-text-field>
 										<v-text-field
 											label="Full Retail"
 											placeholder="710.00"
 											prefix="$"
-											v-model="createDevice.fullRetail"
+											v-model="device.fullRetail"
 										></v-text-field>
 										<v-autocomplete
 											label="Manufacturer"
 											placeholder="Apple"
 											:items="manufacturers"
-											v-model="createDevice.manufacturer"
+											v-model="device.manufacturer"
 										></v-autocomplete>
 										<v-autocomplete
 											label="Storage Capacity"
 											placeholder="64GB"
 											:items="storageCapacities"
-											v-model="createDevice.storageCapacity"
+											v-model="device.storageCapacity"
 										></v-autocomplete>
 									</v-container>
 								</v-card-text>
 
 								<v-card-actions>
 									<v-spacer></v-spacer>
-									<v-btn color="indigo" text @click="close"
+									<v-btn color="indigo" text @click="closeForm"
 										>Cancel</v-btn
 									>
-									<v-btn color="indigo" text @click="axiosCreateDevice"
+									<v-btn color="indigo" text @click="editedIndex === -1 ? axiosCreateDevice() : axiosUpdateDevice(device._id)"
 										>Save</v-btn
 									>
 								</v-card-actions>
@@ -79,17 +79,17 @@
 							<v-card>
 								<v-card-title class="headline">Are you sure you want to delete this?</v-card-title>
 								<v-card-actions>
-								<v-spacer></v-spacer>
-								<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-								<v-btn color="blue darken-1" text @click="axiosDeleteDevice(editedDevice._id)">OK</v-btn>
-								<v-spacer></v-spacer>
+									<v-spacer></v-spacer>
+									<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+									<v-btn color="blue darken-1" text @click="axiosDeleteDevice(device._id)">OK</v-btn>
+									<v-spacer></v-spacer>
 								</v-card-actions>
 							</v-card>
 						</v-dialog>
 					</v-toolbar>
 				</template>
 				<template v-slot:[`item.actions`]="{ item }">
-					<v-icon dense class="mr-4" @click="editDevice(item)">
+					<v-icon dense class="mr-4" @click="openEditDevice(item)">
 						mdi-pencil
 					</v-icon>
 					<v-icon dense @click="openDeleteDevice(item)">
@@ -98,6 +98,21 @@
 				</template>
 			</v-data-table>
 		</v-card>
+		<div class="text-center">
+			<v-snackbar	v-model="snackbar.active">
+				{{ snackbar.message }}
+				<template v-slot:action="{ attrs }">
+					<v-btn
+						color="red"
+						text
+						v-bind="attrs"
+						@click="snackbar.active = false"
+					>
+						Close
+					</v-btn>
+				</template>
+			</v-snackbar>
+		</div>
 	</div>
 </template>
 
@@ -107,24 +122,22 @@ import axios from 'axios'
 import AppBar from '../components/AppBar'
 
 export default {
-	name: 'Home',
+	name: 'Devices',
 
 	components: { AppBar },
 
 	data() {
 		return {
-			dialog: false,
+			dialogForm: false,
 			search: '',
 			editedIndex: -1,
 			loading: true,
 			dialogDelete: false,
-			createDevice: {
-				name: null,
-				manufacturer: null,
-				fullRetail: null,
-				storageCapacity: null
+			snackbar: {
+				active: false,
+				message: null
 			},
-			editedDevice: {
+			device: {
 				name: null,
 				manufacturer: null,
 				fullRetail: null,
@@ -215,6 +228,7 @@ export default {
 
 				this.devices = response.data.data
 			} catch (err) {
+				this.openSnackbar(err.response.data.error)
 				console.error(err)
 			}
 		},
@@ -224,12 +238,29 @@ export default {
 					method: 'post',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices`,
 					withCredentials: true,
-					data: this.createDevice
+					data: this.device
 				})
 
 				this.axiosGetDevices()
-				this.dialog = false
+				this.closeForm()
 			} catch (err) {
+				this.openSnackbar(err.response.data.error)
+				console.error(err)
+			}
+		},
+		async axiosUpdateDevice(deviceId) {
+			try {
+				await axios({
+					method: 'put',
+					url: `${process.env.VUE_APP_API_URL}/api/v1/devices/${deviceId}`,
+					withCredentials: true,
+					data: this.device
+				})
+
+				this.axiosGetDevices()
+				this.closeForm()
+			} catch (err) {
+				this.openSnackbar(err.response.data.error)
 				console.error(err)
 			}
 		},
@@ -244,24 +275,42 @@ export default {
 				this.axiosGetDevices()
 				this.closeDelete()
 			} catch (err) {
+				this.openSnackbar(err.response.data.error)
 				console.error(err)
 			}
 		},
+		openEditDevice (device) {
+			this.editedIndex = this.devices.indexOf(device)
+			this.device = Object.assign({}, device)
+			this.dialogForm = true
+		},
 		openDeleteDevice (device) {
 			this.editedIndex = this.devices.indexOf(device)
-			this.editedDevice = Object.assign({}, device)
+			this.device = Object.assign({}, device)
 			this.dialogDelete = true
 		},
 		closeDelete () {
 			this.dialogDelete = false
 			this.$nextTick(() => {
-				this.editedItem = Object.assign({}, this.defaultItem)
+				this.device = Object.assign({}, this.defaultDevice)
 				this.editedIndex = -1
 			})
 		},
-		close() {
-			this.dialog = false
+		closeForm () {
+			this.dialogForm = false
+			this.$nextTick(() => {
+				this.device = Object.assign({}, this.defaultDevice)
+				this.editedIndex = -1
+			})
 		},
+		openSnackbar (message) {
+			this.snackbar.message = message
+			this.snackbar.active = true
+		},
+		closeSnackbar() {
+			this.snackbar.active = false
+			this.snackbar.message = null
+		}
 	},
 }
 </script>
