@@ -190,6 +190,11 @@ export default {
 					value: 'district',
 				},
 				{
+					text: 'Role',
+					sortable: true,
+					value: 'role'
+				},
+				{
 					text: 'Actions',
 					sortable: false,
 					value: 'actions',
