@@ -48,13 +48,21 @@ router.beforeEach(async (to, from, next) => {
 			})
 
 			if (!response || response.data.success === false) {
-				router.push('/login')
-				next()
+				if (from.url === '/login') {
+					next(false)
+				} else {
+					router.push('/login')
+					next()
+				}
 			}
 
 			if (response.data.data.role !== 'admin' && response.data.data.role !== 'superadmin') {
-				router.push('/login')
-				next()
+				if (from.path === '/login') {
+					next(false)
+				} else {
+					router.push('/login')
+					next()
+				}
 			}
 
 			next()
