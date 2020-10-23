@@ -15,10 +15,18 @@
 				:items="users"
 				:items-per-page="10"
 				class="elevation-1"
+				:search="search"
 			>
 				<template v-slot:top>
 					<v-toolbar flat>
-						<v-toolbar-title>Users</v-toolbar-title>
+						<!-- <v-toolbar-title>Users</v-toolbar-title> -->
+						<v-text-field
+							v-model="search"
+							append-icon="mdi-magnify"
+							label="Search"
+							single-line
+							hide-details
+						></v-text-field>
 						<v-spacer></v-spacer>
 						<v-dialog v-model="dialogForm" max-width="500px">
 							<template v-slot:activator="{ on, attrs }">
