@@ -15,10 +15,27 @@
 				:items="devices"
 				:items-per-page="10"
 				class="elevation-1"
+				:search="search"
 			>
+				<template v-slot:[`item.fullRetail`]="{ item }">
+					${{ item.fullRetail / 100 }}
+				</template>
+
 				<template v-slot:top>
 					<v-toolbar flat>
-						<v-toolbar-title>Devices</v-toolbar-title>
+						<!-- <v-toolbar-title>Devices</v-toolbar-title> -->
+						<!-- <v-divider
+							class="mx-4"
+							inset
+							vertical
+						></v-divider> -->
+						<v-text-field
+							v-model="search"
+							append-icon="mdi-magnify"
+							label="Search"
+							single-line
+							hide-details
+						></v-text-field>
 						<v-spacer></v-spacer>
 						<v-dialog v-model="dialogForm" max-width="500px">
 							<template v-slot:activator="{ on, attrs }">
@@ -33,7 +50,9 @@
 							</template>
 							<v-card>
 								<v-card-title>
-									<span class="headline">{{ formTitle }}</span>
+									<span class="headline">{{
+										formTitle
+									}}</span>
 								</v-card-title>
 
 								<v-card-text>
@@ -43,11 +62,17 @@
 											placeholder="iPhone 11 64GB"
 											v-model="device.name"
 										></v-text-field>
+										<v-autocomplete
+											label="Category"
+											placeholder="Phone"
+											:items="categories"
+											v-model="device.category"
+										></v-autocomplete>
 										<v-text-field
 											label="Full Retail"
 											placeholder="710.00"
 											prefix="$"
-											v-model="device.fullRetail"
+											v-model="fullRetailModified"
 										></v-text-field>
 										<v-autocomplete
 											label="Manufacturer"
@@ -66,10 +91,20 @@
 
 								<v-card-actions>
 									<v-spacer></v-spacer>
-									<v-btn color="indigo" text @click="closeForm"
+									<v-btn
+										color="indigo"
+										text
+										@click="closeForm"
 										>Cancel</v-btn
 									>
-									<v-btn color="indigo" text @click="editedIndex === -1 ? axiosCreateDevice() : axiosUpdateDevice(device._id)"
+									<v-btn
+										color="indigo"
+										text
+										@click="
+											editedIndex === -1
+												? axiosCreateDevice()
+												: axiosUpdateDevice(device._id)
+										"
 										>Save</v-btn
 									>
 								</v-card-actions>
@@ -77,11 +112,24 @@
 						</v-dialog>
 						<v-dialog v-model="dialogDelete" max-width="500px">
 							<v-card>
-								<v-card-title class="headline">Are you sure you want to delete this?</v-card-title>
+								<v-card-title class="headline"
+									>Are you sure you want to delete
+									this?</v-card-title
+								>
 								<v-card-actions>
 									<v-spacer></v-spacer>
-									<v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-									<v-btn color="blue darken-1" text @click="axiosDeleteDevice(device._id)">OK</v-btn>
+									<v-btn
+										color="blue darken-1"
+										text
+										@click="closeDelete"
+										>Cancel</v-btn
+									>
+									<v-btn
+										color="blue darken-1"
+										text
+										@click="axiosDeleteDevice(device._id)"
+										>OK</v-btn
+									>
 									<v-spacer></v-spacer>
 								</v-card-actions>
 							</v-card>
@@ -99,7 +147,7 @@
 			</v-data-table>
 		</v-card>
 		<div class="text-center">
-			<v-snackbar	v-model="snackbar.active">
+			<v-snackbar v-model="snackbar.active">
 				{{ snackbar.message }}
 				<template v-slot:action="{ attrs }">
 					<v-btn
@@ -135,19 +183,21 @@ export default {
 			dialogDelete: false,
 			snackbar: {
 				active: false,
-				message: null
+				message: null,
 			},
 			device: {
 				name: null,
 				manufacturer: null,
 				fullRetail: null,
-				storageCapacity: null
+				storageCapacity: null,
+				category: null
 			},
 			defaultDevice: {
 				name: null,
 				manufacturer: null,
 				fullRetail: null,
-				storageCapacity: null
+				storageCapacity: null,
+				category: null
 			},
 			headers: [
 				{
@@ -156,9 +206,14 @@ export default {
 					value: 'name',
 				},
 				{
-					text: 'Storage',
+					text: 'Category',
 					sortable: true,
-					value: 'storageCapacity',
+					value: 'category'
+				},
+				{
+					text: 'Manufacturer',
+					sortable: true,
+					value: 'manufacturer',
 				},
 				{
 					text: 'Full Retail',
@@ -166,9 +221,9 @@ export default {
 					value: 'fullRetail',
 				},
 				{
-					text: 'Manufacturer',
+					text: 'Storage',
 					sortable: true,
-					value: 'manufacturer',
+					value: 'storageCapacity',
 				},
 				{
 					text: 'Actions',
@@ -195,23 +250,40 @@ export default {
 				'512GB',
 				'1TB',
 			],
+			categories: [
+				'Phone',
+				'Tablet',
+				'Smartwatch',
+				'Other'
+			],
 		}
 	},
 
 	async created() {
 		try {
 			await this.axiosGetDevices()
-			this.loading = false		
+			this.loading = false
 		} catch (err) {
 			console.error(err)
 		}
-
 	},
 
 	computed: {
 		formTitle() {
 			return this.editedIndex === -1 ? 'New Device' : 'Edit Device'
 		},
+		fullRetailModified: {
+			get() {
+				if (this.device.fullRetail) {
+					return this.device.fullRetail / 100
+				} else {
+					return null
+				}
+			},
+			set(newValue) {
+				this.device.fullRetail = newValue * 100
+			}
+		}
 	},
 
 	methods: {
@@ -222,8 +294,8 @@ export default {
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices`,
 					withCredentials: true,
 					params: {
-						limit: 1000
-					}
+						limit: 1000,
+					},
 				})
 
 				this.devices = response.data.data
@@ -238,7 +310,7 @@ export default {
 					method: 'post',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices`,
 					withCredentials: true,
-					data: this.device
+					data: this.device,
 				})
 
 				this.axiosGetDevices()
@@ -254,7 +326,7 @@ export default {
 					method: 'put',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices/${deviceId}`,
 					withCredentials: true,
-					data: this.device
+					data: this.device,
 				})
 
 				this.axiosGetDevices()
@@ -269,7 +341,7 @@ export default {
 				await axios({
 					method: 'delete',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices/${deviceId}`,
-					withCredentials: true
+					withCredentials: true,
 				})
 
 				this.axiosGetDevices()
@@ -279,38 +351,38 @@ export default {
 				console.error(err)
 			}
 		},
-		openEditDevice (device) {
+		openEditDevice(device) {
 			this.editedIndex = this.devices.indexOf(device)
 			this.device = Object.assign({}, device)
 			this.dialogForm = true
 		},
-		openDeleteDevice (device) {
+		openDeleteDevice(device) {
 			this.editedIndex = this.devices.indexOf(device)
 			this.device = Object.assign({}, device)
 			this.dialogDelete = true
 		},
-		closeDelete () {
+		closeDelete() {
 			this.dialogDelete = false
 			this.$nextTick(() => {
 				this.device = Object.assign({}, this.defaultDevice)
 				this.editedIndex = -1
 			})
 		},
-		closeForm () {
+		closeForm() {
 			this.dialogForm = false
 			this.$nextTick(() => {
 				this.device = Object.assign({}, this.defaultDevice)
 				this.editedIndex = -1
 			})
 		},
-		openSnackbar (message) {
+		openSnackbar(message) {
 			this.snackbar.message = message
 			this.snackbar.active = true
 		},
 		closeSnackbar() {
 			this.snackbar.active = false
 			this.snackbar.message = null
-		}
+		},
 	},
 }
 </script>
