@@ -26,10 +26,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     
     - run: npm i
-      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel/
+      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel
       
     - run: npm run build --if-present
-      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel/
+      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel
       
     - run: npm test
-      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel/
+      working-directory: /home/dbs/dbs-app/staged/dbs-admin-panel
