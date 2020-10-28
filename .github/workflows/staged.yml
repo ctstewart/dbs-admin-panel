@@ -28,7 +28,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
       
-    - run: git pull
+    - run: ssh -T git@github.com:heelercs/dbs-admin-panel.git
       shell: bash
     - run: npm i
     - run: npm run build --if-present
