@@ -12,6 +12,11 @@
 				</template>
 
 				<v-list>
+					<v-list-item href="/">
+						<v-list-item-title>
+							Benefit Sheet
+						</v-list-item-title>
+					</v-list-item>
 					<v-list-item @click="axiosLogout">
 						<v-list-item-title>
 							Logout
