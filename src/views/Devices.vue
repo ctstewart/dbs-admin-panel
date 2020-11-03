@@ -235,10 +235,12 @@ export default {
 			manufacturers: [
 				'Apple',
 				'Samsung',
-				'Motorola',
-				'Kyocera',
-				'LG',
 				'Verizon',
+				'Motorola',
+				'LG',
+				'Kyocera',
+				'Google',
+				'Alcatel',
 			],
 			storageCapacities: [
 				'N/A',
