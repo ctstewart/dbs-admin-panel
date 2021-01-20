@@ -287,11 +287,12 @@ export default {
 					params: {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
-						'select': `${this.filteredStores.join(',')},${this.filteredDistricts.join(',')}`
+						'user.store[in]': `${this.filteredStores.join(',')}`
 					},
 				})
 
 				this.logs = response.data.data
+				console.log(this.logs)
 			} catch (err) {
 				this.openSnackbar(err.response.data.error)
 				console.error(err)
