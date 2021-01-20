@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import axios from 'axios'
 import Users from '../views/Users.vue'
 import Devices from '../views/Devices.vue'
+import Logs from '../views/Logs.vue'
 import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
@@ -24,6 +25,12 @@ const routes = [
 		path: '/devices',
 		name: 'Devices',
 		component: Devices,
+		meta: { requiresAuth: true }
+	},
+	{
+		path: '/logs',
+		name: 'Logs',
+		component: Logs,
 		meta: { requiresAuth: true }
 	},
 	{

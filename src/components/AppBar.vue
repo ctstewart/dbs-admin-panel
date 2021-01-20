@@ -29,6 +29,7 @@
 				<v-tabs align-with-title>
 					<v-tab to="/users">Users</v-tab>
 					<v-tab to="/devices">Devices</v-tab>
+					<v-tab to="/logs">Logs</v-tab>
 				</v-tabs>
 			</template>
 		</v-app-bar>
