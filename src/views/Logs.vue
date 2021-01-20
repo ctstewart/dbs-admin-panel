@@ -287,7 +287,7 @@ export default {
 					params: {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
-						'select': `${this.stores.join(',')},${this.districts.join(',')}`
+						'select': `${this.filteredStores.join(',')},${this.filteredDistricts.join(',')}`
 					},
 				})
 
