@@ -12,7 +12,7 @@
 			<v-data-table
 				v-else
 				:headers="headers"
-				:items="logs"
+				:items="logsFiltered"
 				:items-per-page="10"
 				class="elevation-1"
 			>
@@ -272,6 +272,10 @@ export default {
 	},
 
 	computed: {
+		logsFiltered() {
+			let arr = this.logs.filter((log) => this.filteredStores.includes(log.user.store))
+			return arr
+		},
 		dateRangeText() {
 			return this.dates.join(' to ')
 		},
@@ -287,7 +291,7 @@ export default {
 					params: {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
-						'user.store[in]': `${this.filteredStores.join(',')}`
+						'category[in]': ["login"]
 					},
 				})
 
