@@ -291,7 +291,8 @@ export default {
 					params: {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
-						'category[in]': ["login"]
+						'category[in]': ["login"],
+						limit: 10000
 					},
 				})
 
