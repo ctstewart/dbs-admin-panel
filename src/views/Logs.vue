@@ -21,101 +21,63 @@
 				</template>
 
 				<template v-slot:top>
+					<v-row><v-col></v-col></v-row>
 					<v-toolbar flat>
-						<v-spacer></v-spacer>
-						<v-dialog v-model="dialogFilters" max-width="500px">
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn
-									color="indigo"
-									dark
-									class="mb-2"
-									v-bind="attrs"
-									v-on="on"
-									>Filters</v-btn
+						<v-row m-4>
+							<v-col cols="3">
+								<v-menu
+									ref="menu"
+									v-model="menu"
+									:close-on-content-click="false"
+									:value="dateRangeText"
+									transition="scale-transition"
+									offset-y
+									min-width="290px"
 								>
-							</template>
-							<v-card>
-								<v-card-title>
-									<span class="headline">Filters</span>
-								</v-card-title>
-
-								<v-card-text>
-									<v-container>
-										<v-menu
-											ref="menu"
-											v-model="menu"
-											:close-on-content-click="false"
-											:value="dateRangeText"
-											transition="scale-transition"
-											offset-y
-											min-width="290px"
-										>
-											<template
-												v-slot:activator="{ on, attrs }"
-											>
-												<v-text-field
-													v-model="dateRangeText"
-													readonly
-													v-bind="attrs"
-													v-on="on"
-													outlined
-												></v-text-field>
-											</template>
-											<v-date-picker
-												v-model="dates"
-												range
-												no-title
-												scrollable
-												@change="axiosGetLogs"
-											>
-												<v-spacer></v-spacer>
-												<v-btn
-													text
-													color="primary"
-													@click="menu = false"
-												>
-													Done
-												</v-btn>
-											</v-date-picker>
-										</v-menu>
-										<v-autocomplete
-											chips
-											clearable
-											deletable-chips
-											small-chips
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field
+											v-model="dateRangeText"
+											readonly
+											v-bind="attrs"
+											v-on="on"
 											outlined
-											label="Stores"
-											:items="stores"
-											v-model="filteredStores"
-											multiple
-											@change='axiosGetLogs'
-										></v-autocomplete>
-										<v-autocomplete
-											chips
-											clearable
-											deletable-chips
-											small-chips
-											outlined
-											label="Districts"
-											:items="districts"
-											v-model="filteredDistricts"
-											multiple
-											@change='axiosGetLogs'
-										></v-autocomplete>
-									</v-container>
-								</v-card-text>
-
-								<v-card-actions>
-									<v-spacer></v-spacer>
-									<v-btn
-										color="indigo"
-										text
-										@click="dialogFilters = false"
-										>Done</v-btn
+											solo
+										></v-text-field>
+									</template>
+									<v-date-picker
+										v-model="dates"
+										range
+										no-title
+										scrollable
+										@change="axiosGetLogs"
 									>
-								</v-card-actions>
-							</v-card>
-						</v-dialog>
+										<v-spacer></v-spacer>
+										<v-btn
+											text
+											color="primary"
+											@click="menu = false"
+										>
+											Done
+										</v-btn>
+									</v-date-picker>
+								</v-menu>
+							</v-col>
+							<v-col cols="3">
+								<v-autocomplete
+									chips
+									clearable
+									deletable-chips
+									small-chips
+									outlined
+									solo
+									label="Stores"
+									:items="stores"
+									v-model="filteredStores"
+									multiple
+									@change="axiosGetLogs"
+								></v-autocomplete>
+							</v-col>
+						</v-row>
 					</v-toolbar>
 				</template>
 			</v-data-table>
@@ -273,7 +235,9 @@ export default {
 
 	computed: {
 		logsFiltered() {
-			let arr = this.logs.filter((log) => this.filteredStores.includes(log.user.store))
+			let arr = this.logs.filter((log) =>
+				this.filteredStores.includes(log.user.store)
+			)
 			return arr
 		},
 		dateRangeText() {
@@ -291,8 +255,8 @@ export default {
 					params: {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
-						'category[in]': ["login"],
-						limit: 10000
+						'category[in]': ['login'],
+						limit: 10000,
 					},
 				})
 
