@@ -62,7 +62,7 @@
 									</v-date-picker>
 								</v-menu>
 							</v-col>
-							<v-col cols="3">
+							<v-col cols="9">
 								<v-autocomplete
 									chips
 									clearable
@@ -235,8 +235,9 @@ export default {
 
 	computed: {
 		logsFiltered() {
-			let arr = this.logs.filter((log) =>
-				this.filteredStores.includes(log.user.store)
+			console.log(this.logs);
+			let arr = this.logs.filter((i) =>
+				this.filteredStores.includes(i.user.store)
 			)
 			return arr
 		},
