@@ -5,7 +5,7 @@
 	"scripts": {
 		"serve": "vue-cli-service serve --mode development",
 		"build": "vue-cli-service build",
-		"cp-to-prod": "cp .env.production.local dist ../prod-admin-panel",
+		"cp-to-prod": "cp .env.production.local dist ../prod-admin-panel -r",
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
