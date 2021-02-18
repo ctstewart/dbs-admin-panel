@@ -3,19 +3,15 @@
 		<app-bar />
 		<v-card>
 			<v-data-table
-				v-if="loading"
-				item-key="name"
-				class="elevation-1"
-				loading
-				loading-text="Loading... Please wait"
-			></v-data-table>
-			<v-data-table
-				v-else
 				:headers="headers"
 				:items="logsFiltered"
-				:items-per-page="10"
+				:options.sync="options"
+				:server-items-length="totalLogsCount"
 				class="elevation-1"
+				:loading="loading"
+				loading-text="Loading... Please wait"
 			>
+
 				<template v-slot:[`item.createdAt`]="{ item }">
 					{{ new Date(item.createdAt).toLocaleString('en-US') }}
 				</template>
@@ -113,10 +109,12 @@ export default {
 
 	data() {
 		return {
+			options: {},
+			totalLogsCount: 0,
 			dialogFilters: false,
 			loading: true,
 			menu: false,
-			filteredStores: ["Owatonna North"],
+			filteredStores: ["User's Store"],
 			filteredDistricts: [],
 			snackbar: {
 				active: false,
@@ -235,7 +233,6 @@ export default {
 
 	computed: {
 		logsFiltered() {
-			console.log(this.logs);
 			let arr = this.logs.filter((i) =>
 				this.filteredStores.includes(i.user.store)
 			)
@@ -244,6 +241,17 @@ export default {
 		dateRangeText() {
 			return this.dates.join(' to ')
 		},
+	},
+
+	watch: {
+		options: {
+			async handler () {
+				this.loading = true
+				await this.axiosGetLogs()
+				this.loading = false
+			},
+			deep: true,
+		}
 	},
 
 	methods: {
@@ -257,12 +265,14 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
-						limit: 10,
+						limit: 5,
+						page: this.options.page,
 					},
 				})
 
+				this.totalLogsCount = response.data.pagination.total
+
 				this.logs = response.data.data
-				console.log(this.logs)
 			} catch (err) {
 				this.openSnackbar(err.response.data.error)
 				console.error(err)
