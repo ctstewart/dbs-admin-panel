@@ -245,7 +245,7 @@ export default {
 					console.log(i.user.store);
 				})
 				arr = this.logs.filter((i) => {
-					return this.filteredStores.includes(i.user.store)
+					return i.user.some(x => this.filteredStores.includes(x.store))
 				})
 			}
 			return arr
