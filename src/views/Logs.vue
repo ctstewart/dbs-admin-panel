@@ -114,7 +114,7 @@ export default {
 			dialogFilters: false,
 			loading: true,
 			menu: false,
-			filteredStores: ["User's Store"],
+			filteredStores: [],
 			filteredDistricts: [],
 			snackbar: {
 				active: false,
@@ -239,6 +239,14 @@ export default {
 
 	watch: {
 		options: {
+			async handler () {
+				this.loading = true
+				await this.axiosGetLogs()
+				this.loading = false
+			},
+			deep: true,
+		},
+		filteredStores: {
 			async handler () {
 				this.loading = true
 				await this.axiosGetLogs()
