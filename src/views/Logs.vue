@@ -233,10 +233,11 @@ export default {
 
 	computed: {
 		logsFiltered() {
-			let arr = this.logs.filter((i) =>
-				this.filteredStores.includes(i.user.store)
-			)
-			return arr
+			// let arr = this.logs.filter((i) =>
+			// 	this.filteredStores.includes(i.user.store)
+			// )
+			// return arr
+			return this.logs
 		},
 		dateRangeText() {
 			return this.dates.join(' to ')
