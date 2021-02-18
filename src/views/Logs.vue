@@ -239,6 +239,9 @@ export default {
 			let arr = []
 
 			if (this.filteredStores && this.logs) {
+				this.logs.forEach((i) => {
+					console.log(i.user.store);
+				})
 				arr = this.logs.filter((i) =>
 					this.filteredStores.includes(i.user.store)
 				)
