@@ -236,9 +236,13 @@ export default {
 	computed: {
 		logsFiltered() {
 			console.log(this.logs);
-			let arr = this.logs.filter((i) =>
-				this.filteredStores.includes(i.user.store)
-			)
+			let arr = []
+
+			if (this.filteredStores) {
+				arr = this.logs.filter((i) =>
+					this.filteredStores.includes(i.user.store)
+				)
+			}
 			return arr
 		},
 		dateRangeText() {
