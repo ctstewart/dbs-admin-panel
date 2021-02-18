@@ -4,7 +4,7 @@
 		<v-card>
 			<v-data-table
 				:headers="headers"
-				:items="logsFiltered"
+				:items="logs"
 				:options.sync="options"
 				:server-items-length="totalLogsCount"
 				class="elevation-1"
@@ -114,7 +114,7 @@ export default {
 			dialogFilters: false,
 			loading: true,
 			menu: false,
-			filteredStores: [],
+			filteredStores: ["User's Store"],
 			filteredDistricts: [],
 			snackbar: {
 				active: false,
@@ -232,13 +232,6 @@ export default {
 	},
 
 	computed: {
-		logsFiltered() {
-			// let arr = this.logs.filter((i) =>
-			// 	this.filteredStores.includes(i.user.store)
-			// )
-			// return arr
-			return this.logs
-		},
 		dateRangeText() {
 			return this.dates.join(' to ')
 		},
@@ -266,6 +259,7 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
+						'user.store[in]': this.filteredStores,
 						limit: 10,
 						page: this.options.page,
 					},
