@@ -238,7 +238,7 @@ export default {
 			console.log(this.logs);
 			let arr = []
 
-			if (this.filteredStores) {
+			if (this.filteredStores && this.logs) {
 				arr = this.logs.filter((i) =>
 					this.filteredStores.includes(i.user.store)
 				)
