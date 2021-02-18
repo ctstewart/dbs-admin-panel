@@ -114,7 +114,7 @@ export default {
 			dialogFilters: false,
 			loading: true,
 			menu: false,
-			filteredStores: ["User's Store"],
+			filteredStores: [],
 			filteredDistricts: [],
 			snackbar: {
 				active: false,
@@ -265,7 +265,7 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
-						limit: 5,
+						limit: 10,
 						page: this.options.page,
 					},
 				})
