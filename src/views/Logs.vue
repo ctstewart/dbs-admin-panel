@@ -242,9 +242,9 @@ export default {
 				this.logs.forEach((i) => {
 					console.log(i.user.store);
 				})
-				arr = this.logs.filter((i) =>
-					this.filteredStores.includes(i.user.store)
-				)
+				arr = this.logs.filter((i) => {
+					return this.filteredStores.includes(i.user.store)
+				})
 			}
 			return arr
 		},
