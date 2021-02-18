@@ -116,7 +116,7 @@ export default {
 			dialogFilters: false,
 			loading: true,
 			menu: false,
-			filteredStores: [],
+			filteredStores: ["Owatonna North"],
 			filteredDistricts: [],
 			snackbar: {
 				active: false,
@@ -236,18 +236,9 @@ export default {
 	computed: {
 		logsFiltered() {
 			console.log(this.logs);
-			let arr = []
-
-			console.log(this.filteredStores);
-
-			if (this.filteredStores.length > 0 && this.logs.length > 0) {
-				this.logs.forEach((i) => {
-					console.log(i.user.store);
-				})
-				arr = this.logs.filter((i) => {
-					return i.user.some(x => this.filteredStores.includes(x.store))
-				})
-			}
+			let arr = this.logs.filter((i) =>
+				this.filteredStores.includes(i.user.store)
+			)
 			return arr
 		},
 		dateRangeText() {
