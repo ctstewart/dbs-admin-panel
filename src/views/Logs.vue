@@ -257,7 +257,7 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
-						limit: 10000,
+						limit: 10,
 					},
 				})
 
