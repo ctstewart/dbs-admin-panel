@@ -238,7 +238,9 @@ export default {
 			console.log(this.logs);
 			let arr = []
 
-			if (this.filteredStores && this.logs) {
+			console.log(this.filteredStores);
+
+			if (this.filteredStores.length > 0 && this.logs.length > 0) {
 				this.logs.forEach((i) => {
 					console.log(i.user.store);
 				})
