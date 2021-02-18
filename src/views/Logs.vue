@@ -70,7 +70,6 @@
 									:items="stores"
 									v-model="filteredStores"
 									multiple
-									@change="axiosGetLogs"
 								></v-autocomplete>
 							</v-col>
 						</v-row>
@@ -202,6 +201,7 @@ export default {
 				'Willmar',
 				'Worthington',
 				'Yankton',
+				"User's Store"
 			],
 			districts: [
 				'Admin Staff',
@@ -267,7 +267,7 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
-						'user.store[in]': this.filteredStores,
+						'user[store][in]': this.filteredStores,
 						limit: 10,
 						page: this.options.page,
 					},
