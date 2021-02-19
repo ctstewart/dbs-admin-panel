@@ -124,27 +124,27 @@ export default {
 				{
 					text: 'First Name',
 					sortable: true,
-					value: 'user.firstName',
+					value: 'firstName',
 				},
 				{
 					text: 'Last Name',
 					sortable: true,
-					value: 'user.lastName',
+					value: 'lastName',
 				},
 				{
 					text: 'Email',
 					sortable: true,
-					value: 'user.email',
+					value: 'email',
 				},
 				{
 					text: 'Store',
 					sortable: true,
-					value: 'user.store',
+					value: 'store',
 				},
 				{
 					text: 'District',
 					sortable: true,
-					value: 'user.district',
+					value: 'district',
 				},
 				{
 					text: 'Logged In',
@@ -201,7 +201,6 @@ export default {
 				'Willmar',
 				'Worthington',
 				'Yankton',
-				"User's Store"
 			],
 			districts: [
 				'Admin Staff',
@@ -267,7 +266,7 @@ export default {
 						'createdAt[gte]': this.dates[0],
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
-						'user[store][in]': this.filteredStores,
+						'store[in]': this.filteredStores,
 						limit: 10,
 						page: this.options.page,
 					},
