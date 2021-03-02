@@ -267,7 +267,7 @@ export default {
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
 						'store[in]': this.filteredStores,
-						limit: 10,
+						limit: this.options.itemsPerPage,
 						page: this.options.page,
 					},
 				})
