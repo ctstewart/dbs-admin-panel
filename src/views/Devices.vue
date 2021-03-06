@@ -21,9 +21,9 @@
 					${{ item.fullRetail / 100 }}
 				</template>
 
-				<template v-slot:[`item.dppLength`]="{ item }">
+				<!-- <template v-slot:[`item.dppLength`]="{ item }">
 					{{ item.dppLength.join(', ') }} months
-				</template>
+				</template> -->
 
 				<template v-slot:top>
 					<v-toolbar flat>
@@ -90,14 +90,14 @@
 											:items="storageCapacities"
 											v-model="device.storageCapacity"
 										></v-autocomplete>
-										<v-autocomplete
+										<!-- <v-autocomplete
 											multiple
 											label="DPP Options"
 											placeholder="24"
 											:items="dppLengthOptions"
 											v-model="device.dppLength"
 											suffix="Months"
-										></v-autocomplete>
+										></v-autocomplete> -->
 									</v-container>
 								</v-card-text>
 
@@ -203,7 +203,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				dppLength: []
+				// dppLength: []
 			},
 			defaultDevice: {
 				name: null,
@@ -211,7 +211,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				dppLength: []
+				// dppLength: []
 			},
 			headers: [
 				{
@@ -239,11 +239,11 @@ export default {
 					sortable: true,
 					value: 'storageCapacity',
 				},
-				{
-					text: 'DPP Length',
-					sortable: false,
-					value: 'dppLength'
-				},
+				// {
+				// 	text: 'DPP Length',
+				// 	sortable: false,
+				// 	value: 'dppLength'
+				// },
 				{
 					text: 'Actions',
 					sortable: false,
@@ -277,7 +277,7 @@ export default {
 				'Smartwatch',
 				'Other'
 			],
-			dppLengthOptions: [ 24, 30 ]
+			// dppLengthOptions: [ 24, 30 ]
 		}
 	},
 
