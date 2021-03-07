@@ -20,7 +20,7 @@
 					<v-row><v-col></v-col></v-row>
 					<v-toolbar flat>
 						<v-row m-4>
-							<v-col cols="3">
+							<v-col cols="2">
 								<v-menu
 									ref="menu"
 									v-model="menu"
@@ -58,7 +58,7 @@
 									</v-date-picker>
 								</v-menu>
 							</v-col>
-							<v-col cols="9">
+							<v-col cols="5">
 								<v-autocomplete
 									chips
 									clearable
@@ -69,6 +69,20 @@
 									label="Stores"
 									:items="stores"
 									v-model="filteredStores"
+									multiple
+								></v-autocomplete>
+							</v-col>
+							<v-col cols="5">
+								<v-autocomplete
+									chips
+									clearable
+									deletable-chips
+									small-chips
+									outlined
+									solo
+									label="Districts"
+									:items="districts"
+									v-model="filteredDistricts"
 									multiple
 								></v-autocomplete>
 							</v-col>
@@ -252,6 +266,14 @@ export default {
 				this.loading = false
 			},
 			deep: true,
+		},
+		filteredDistricts: {
+			async handler () {
+				this.loading = true
+				await this.axiosGetLogs()
+				this.loading = false
+			},
+			deep: true,
 		}
 	},
 
@@ -267,6 +289,7 @@ export default {
 						'createdAt[lte]': this.dates[1],
 						'category[in]': ['login'],
 						'store[in]': this.filteredStores,
+						'district[in]': this.filteredDistricts,
 						limit: this.options.itemsPerPage,
 						page: this.options.page,
 					},
