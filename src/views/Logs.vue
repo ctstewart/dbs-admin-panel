@@ -290,6 +290,7 @@ export default {
 						'category[in]': ['login'],
 						'store[in]': this.filteredStores,
 						'district[in]': this.filteredDistricts,
+						sort: this.options.sortBy,
 						limit: this.options.itemsPerPage,
 						page: this.options.page,
 					},
