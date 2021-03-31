@@ -21,18 +21,19 @@
 					${{ item.fullRetail / 100 }}
 				</template>
 
+				<template v-slot:[`item.dppLength`]="{ item }">
+					<v-simple-checkbox
+						:value="item.dppLength.includes(30)"
+					>
+					</v-simple-checkbox>
+				</template>
+
 				<!-- <template v-slot:[`item.dppLength`]="{ item }">
-					{{ item.dppLength.join(', ') }} months
+					{{ item.dppLength.join(' and ') }}
 				</template> -->
 
 				<template v-slot:top>
 					<v-toolbar flat>
-						<!-- <v-toolbar-title>Devices</v-toolbar-title> -->
-						<!-- <v-divider
-							class="mx-4"
-							inset
-							vertical
-						></v-divider> -->
 						<v-text-field
 							v-model="search"
 							append-icon="mdi-magnify"
@@ -90,14 +91,12 @@
 											:items="storageCapacities"
 											v-model="device.storageCapacity"
 										></v-autocomplete>
-										<!-- <v-autocomplete
-											multiple
-											label="DPP Options"
-											placeholder="24"
-											:items="dppLengthOptions"
-											v-model="device.dppLength"
-											suffix="Months"
-										></v-autocomplete> -->
+										<v-checkbox
+										v-model="device.dppLength"
+											label="30 Month Option?"
+											value="30"
+										>
+										</v-checkbox>
 									</v-container>
 								</v-card-text>
 
@@ -203,7 +202,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				// dppLength: []
+				dppLength: []
 			},
 			defaultDevice: {
 				name: null,
@@ -211,7 +210,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				// dppLength: []
+				dppLength: []
 			},
 			headers: [
 				{
@@ -239,11 +238,11 @@ export default {
 					sortable: true,
 					value: 'storageCapacity',
 				},
-				// {
-				// 	text: 'DPP Length',
-				// 	sortable: false,
-				// 	value: 'dppLength'
-				// },
+				{
+					text: '30 Month?',
+					sortable: true,
+					value: 'dppLength'
+				},
 				{
 					text: 'Actions',
 					sortable: false,
@@ -277,7 +276,6 @@ export default {
 				'Smartwatch',
 				'Other'
 			],
-			// dppLengthOptions: [ 24, 30 ]
 		}
 	},
 
