@@ -8,6 +8,6 @@ COPY . .
 RUN npm run build
 
 FROM nginx as production-stage
-COPY --from=build-stage /usr/src/client/dist /usr/share/nginx/html
+COPY --from=build-stage /usr/src/admin-panel/dist /usr/share/nginx/html
 EXPOSE 80
 CMD [ "nginx", "-g", "daemon off;" ]
