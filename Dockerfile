@@ -1,4 +1,4 @@
-FROM node:14 as build-stage
+FROM node:12 as build-stage
 WORKDIR /usr/src/admin-panel
 ARG VUE_APP_API_URL
 ENV VUE_APP_API_URL=${VUE_APP_API_URL}
