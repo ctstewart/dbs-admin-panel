@@ -9,7 +9,7 @@ module.exports = {
 	},
 	publicPath: '',
 	devServer: {
-		port: process.env.DEV_SERVER_PORT,
+		port: 4000,
 	},
 	transpileDependencies: ['vuetify'],
 }

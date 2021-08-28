@@ -21,17 +21,6 @@
 					${{ item.fullRetail / 100 }}
 				</template>
 
-				<template v-slot:[`item.dppLength`]="{ item }">
-					<v-simple-checkbox
-						:value="item.dppLength.includes(30)"
-					>
-					</v-simple-checkbox>
-				</template>
-
-				<!-- <template v-slot:[`item.dppLength`]="{ item }">
-					{{ item.dppLength.join(' and ') }}
-				</template> -->
-
 				<template v-slot:top>
 					<v-toolbar flat>
 						<v-text-field
@@ -91,12 +80,6 @@
 											:items="storageCapacities"
 											v-model="device.storageCapacity"
 										></v-autocomplete>
-										<v-checkbox
-										v-model="device.dppLength"
-											label="30 Month Option?"
-											value="30"
-										>
-										</v-checkbox>
 									</v-container>
 								</v-card-text>
 
@@ -202,7 +185,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				dppLength: []
+				dppLength: [],
 			},
 			defaultDevice: {
 				name: null,
@@ -210,7 +193,7 @@ export default {
 				fullRetail: null,
 				storageCapacity: null,
 				category: null,
-				dppLength: []
+				dppLength: [],
 			},
 			headers: [
 				{
@@ -221,7 +204,7 @@ export default {
 				{
 					text: 'Category',
 					sortable: true,
-					value: 'category'
+					value: 'category',
 				},
 				{
 					text: 'Manufacturer',
@@ -237,11 +220,6 @@ export default {
 					text: 'Storage',
 					sortable: true,
 					value: 'storageCapacity',
-				},
-				{
-					text: '30 Month?',
-					sortable: true,
-					value: 'dppLength'
 				},
 				{
 					text: 'Actions',
@@ -270,12 +248,7 @@ export default {
 				'512GB',
 				'1TB',
 			],
-			categories: [
-				'Phone',
-				'Tablet',
-				'Smartwatch',
-				'Other'
-			],
+			categories: ['Phone', 'Tablet', 'Smartwatch', 'Other'],
 		}
 	},
 
@@ -302,16 +275,19 @@ export default {
 			},
 			set(newValue) {
 				this.device.fullRetail = newValue * 100
-			}
-		}
+			},
+		},
 	},
 
 	methods: {
 		async axiosGetDevices() {
 			try {
+				const token = await this.$auth.getTokenSilently()
+
 				const response = await axios({
 					method: 'get',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices`,
+					headers: { Authorization: `Bearer ${token}` },
 					withCredentials: true,
 					params: {
 						limit: 1000,
@@ -326,9 +302,12 @@ export default {
 		},
 		async axiosCreateDevice() {
 			try {
+				const token = await this.$auth.getTokenSilently()
+
 				await axios({
 					method: 'post',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices`,
+					headers: { Authorization: `Bearer ${token}` },
 					withCredentials: true,
 					data: this.device,
 				})
@@ -342,9 +321,12 @@ export default {
 		},
 		async axiosUpdateDevice(deviceId) {
 			try {
+				const token = await this.$auth.getTokenSilently()
+
 				await axios({
 					method: 'put',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices/${deviceId}`,
+					headers: { Authorization: `Bearer ${token}` },
 					withCredentials: true,
 					data: this.device,
 				})
@@ -358,9 +340,12 @@ export default {
 		},
 		async axiosDeleteDevice(deviceId) {
 			try {
+				const token = await this.$auth.getTokenSilently()
+
 				await axios({
 					method: 'delete',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/devices/${deviceId}`,
+					headers: { Authorization: `Bearer ${token}` },
 					withCredentials: true,
 				})
 

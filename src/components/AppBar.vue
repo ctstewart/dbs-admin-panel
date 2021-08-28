@@ -27,9 +27,7 @@
 
 			<template v-slot:extension>
 				<v-tabs align-with-title>
-					<v-tab to="/users">Users</v-tab>
 					<v-tab to="/devices">Devices</v-tab>
-					<v-tab to="/logs">Logs</v-tab>
 				</v-tabs>
 			</template>
 		</v-app-bar>
@@ -45,20 +43,23 @@ export default {
 	},
 
 	methods: {
-		async axiosLogout () {
+		async axiosLogout() {
 			try {
+				const token = await this.$auth.getTokenSilently()
+
 				await axios({
 					method: 'get',
 					url: `${process.env.VUE_APP_API_URL}/api/v1/auth/logout`,
-					withCredentials: true
+					headers: { Authorization: `Bearer ${token}` },
+					withCredentials: true,
 				})
 
 				this.$router.push('/login')
 			} catch (err) {
 				console.error(err)
 			}
-		}
-	}
+		},
+	},
 }
 </script>
 
